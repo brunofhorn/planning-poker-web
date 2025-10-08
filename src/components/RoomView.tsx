@@ -72,80 +72,25 @@ export function RoomView({ room, session, onLeave }: RoomViewProps) {
     setSelectedTransferTarget('')
   }
 
-  const layoutSeats = useMemo(() => {
-    if (participants.length === 0) {
-      return [] as Array<{
-        participant: typeof participants[number]
-        style: { left: string; top: string }
-        displayVote: string
-        voteClass: string
-        side: 'top' | 'right' | 'bottom' | 'left'
-      }>
+  const layoutSeats = participants.map((participant, index) => {
+    const angle = (index / participants.length) * 2 * Math.PI - Math.PI / 2
+    const radius = 38
+    const x = 50 + radius * Math.cos(angle)
+    const y = 50 + radius * Math.sin(angle)
+    const vote = votes[participant.id]
+    const displayVote = room.revealed ? vote ?? '—' : vote ? '•' : ''
+    const voteClass = room.revealed ? 'revealed' : vote ? 'hidden' : 'empty'
+
+    return {
+      participant,
+      style: {
+        left: `${x}%`,
+        top: `${y}%`,
+      } as const,
+      displayVote,
+      voteClass,
     }
-
-    const sides: Array<'top' | 'right' | 'bottom' | 'left'> = ['top', 'right', 'bottom', 'left']
-    const baseCount = Math.floor(participants.length / sides.length)
-    const remainder = participants.length % sides.length
-    const sideCounts = sides.map((_, index) => baseCount + (index < remainder ? 1 : 0))
-
-    let seatIndex = 0
-
-    return participants.map((participant) => {
-      let accumulated = 0
-      let sideIndex = 0
-      for (; sideIndex < sides.length; sideIndex += 1) {
-        const countForSide = sideCounts[sideIndex]
-        if (seatIndex < accumulated + countForSide) {
-          break
-        }
-        accumulated += countForSide
-      }
-
-      const side = sides[sideIndex] ?? 'top'
-      const countForSide = sideCounts[sideIndex] ?? participants.length
-      const positionInSide = countForSide > 0 ? seatIndex - accumulated : 0
-      const ratio = countForSide <= 1 ? 0.5 : positionInSide / (countForSide - 1)
-
-      const horizontalStart = 18
-      const horizontalEnd = 82
-      const verticalStart = 24
-      const verticalEnd = 76
-
-      let left = 50
-      let top = 50
-
-      if (side === 'top') {
-        left = horizontalStart + (horizontalEnd - horizontalStart) * ratio
-        top = 10
-      } else if (side === 'right') {
-        left = 90
-        top = verticalStart + (verticalEnd - verticalStart) * ratio
-      } else if (side === 'bottom') {
-        left = horizontalEnd - (horizontalEnd - horizontalStart) * ratio
-        top = 90
-      } else {
-        left = 10
-        top = verticalEnd - (verticalEnd - verticalStart) * ratio
-      }
-
-      const vote = votes[participant.id]
-      const displayVote = room.revealed ? vote ?? '—' : vote ? '•' : ''
-      const voteClass = room.revealed ? 'revealed' : vote ? 'hidden' : 'empty'
-
-      seatIndex += 1
-
-      return {
-        participant,
-        style: {
-          left: `${left}%`,
-          top: `${top}%`,
-        } as const,
-        displayVote,
-        voteClass,
-        side,
-      }
-    })
-  }, [participants, votes, room.revealed])
+  })
 
   return (
     <div className="room-screen">
@@ -258,23 +203,23 @@ export function RoomView({ room, session, onLeave }: RoomViewProps) {
           <div className="table-wrapper">
             <div className={`poker-table ${room.revealed ? 'revealed' : ''}`}>
               <div className="table-status">{statusMessage}</div>
+              <ul className="seats">
+                {layoutSeats.map(({ participant, style, displayVote, voteClass }) => (
+                  <li key={participant.id} className={`seat ${voteClass}`} style={style}>
+                    <span className="seat-avatar" style={{ backgroundColor: participant.avatarColor }}>
+                      {participant.name.charAt(0).toUpperCase()}
+                    </span>
+                    <span className="seat-name">
+                      {participant.name}
+                      {participant.id === room.hostId ? ' ⭐' : ''}
+                    </span>
+                    <span className="seat-card" data-value={displayVote}>
+                      {displayVote}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className="seats">
-              {layoutSeats.map(({ participant, style, displayVote, voteClass, side }) => (
-                <li key={participant.id} className={`seat ${voteClass} side-${side}`} style={style}>
-                  <span className="seat-avatar" style={{ backgroundColor: participant.avatarColor }}>
-                    {participant.name.charAt(0).toUpperCase()}
-                  </span>
-                  <span className="seat-name">
-                    {participant.name}
-                    {participant.id === room.hostId ? ' ⭐' : ''}
-                  </span>
-                  <span className="seat-card" data-value={displayVote}>
-                    {displayVote}
-                  </span>
-                </li>
-              ))}
-            </ul>
           </div>
 
           <div className="deck">

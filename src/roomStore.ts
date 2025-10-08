@@ -30,10 +30,13 @@ const BROADCAST_KEY = 'planning-poker-sync'
 
 const isBrowser = typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
 
-function parseStoredRooms(payload: string | null): RoomsMap {
-  if (!payload) return {}
+function loadRooms(): RoomsMap {
+  if (!isBrowser) return {}
   try {
-    const parsed = JSON.parse(payload) as RoomsMap
+    const stored = window.localStorage.getItem(STORAGE_KEY)
+    if (!stored) return {}
+    const parsed = JSON.parse(stored) as RoomsMap
+    // Validate deck arrays to ensure they are arrays of strings
     Object.values(parsed).forEach((room) => {
       if (!Array.isArray(room.deckValues)) {
         room.deckValues = []
@@ -47,12 +50,6 @@ function parseStoredRooms(payload: string | null): RoomsMap {
     console.warn('Unable to parse rooms from storage', error)
     return {}
   }
-}
-
-function loadRooms(): RoomsMap {
-  if (!isBrowser) return {}
-  const stored = window.localStorage.getItem(STORAGE_KEY)
-  return parseStoredRooms(stored)
 }
 
 let rooms: RoomsMap = loadRooms()
@@ -71,14 +68,6 @@ channel?.addEventListener('message', (event) => {
     emit()
   }
 })
-
-if (isBrowser) {
-  window.addEventListener('storage', (event) => {
-    if (event.key !== STORAGE_KEY) return
-    rooms = parseStoredRooms(event.newValue)
-    emit()
-  })
-}
 
 function emit() {
   listeners.forEach((listener) => listener())

@@ -416,31 +416,20 @@
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 3.5rem 4rem;
 }
 
 .poker-table {
-  width: min(720px, 100%);
-  aspect-ratio: 5 / 3;
-  border-radius: 36px;
-  background: linear-gradient(135deg, #1d4ed8, #2563eb);
-  box-shadow: inset 0 0 0 6px rgba(15, 23, 42, 0.2), inset 0 0 0 12px rgba(255, 255, 255, 0.15);
+  width: min(640px, 100%);
+  aspect-ratio: 3 / 2;
+  border-radius: 50% / 45%;
+  background: radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.2), transparent 50%),
+    linear-gradient(135deg, #4f46e5, #2563eb);
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #e0f2fe;
-  padding: 1.5rem;
-  z-index: 1;
-}
-
-.poker-table::after {
-  content: '';
-  position: absolute;
-  inset: 1.5rem;
-  border-radius: 24px;
-  border: 2px dashed rgba(224, 242, 254, 0.3);
+  padding: 1rem;
 }
 
 .poker-table.revealed {
@@ -449,64 +438,43 @@
 
 .table-status {
   background: rgba(15, 23, 42, 0.35);
-  padding: 1.1rem 1.75rem;
+  padding: 1rem 1.5rem;
   border-radius: 18px;
   font-weight: 600;
   text-align: center;
   max-width: 70%;
-  z-index: 1;
 }
 
 .seats {
   list-style: none;
   padding: 0;
   margin: 0;
+  width: 100%;
+  height: 100%;
   position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2;
+  top: 0;
+  left: 0;
 }
 
 .seat {
   position: absolute;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.4rem;
   color: #fff;
-  pointer-events: auto;
-}
-
-.seat.side-top {
-  transform: translate(-50%, -70%);
-}
-
-.seat.side-bottom {
-  transform: translate(-50%, -30%);
-}
-
-.seat.side-right {
-  transform: translate(-30%, -50%);
-  align-items: flex-start;
-  text-align: left;
-}
-
-.seat.side-left {
-  transform: translate(-70%, -50%);
-  align-items: flex-end;
-  text-align: right;
 }
 
 .seat .seat-avatar {
-  width: 60px;
-  height: 60px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   display: grid;
   place-items: center;
   font-weight: 700;
   color: #fff;
   border: 3px solid rgba(15, 23, 42, 0.25);
-  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.35);
 }
 
 .seat .seat-name {
@@ -516,17 +484,16 @@
 }
 
 .seat .seat-card {
-  background: rgba(15, 23, 42, 0.45);
-  padding: 0.45rem 0.85rem;
+  background: rgba(15, 23, 42, 0.35);
+  padding: 0.45rem 0.75rem;
   border-radius: 12px;
-  min-width: 36px;
+  min-width: 32px;
   text-align: center;
   font-weight: 700;
-  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.4);
 }
 
 .seat.hidden .seat-card {
-  background: rgba(15, 23, 42, 0.65);
+  background: rgba(15, 23, 42, 0.55);
 }
 
 .seat.empty .seat-card {
@@ -598,16 +565,6 @@
     order: 1;
   }
 
-  .table-wrapper {
-    padding: 2.5rem;
-  }
-
-  .seat .seat-avatar {
-    width: 54px;
-    height: 54px;
-  }
-}
-
 @media (max-width: 640px) {
   .app-shell {
     padding: 2rem 1rem 3rem;
@@ -624,35 +581,6 @@
   .room-actions {
     flex-wrap: wrap;
     justify-content: flex-end;
-  }
-
-  .table-wrapper {
-    padding: 2rem;
-  }
-
-  .poker-table {
-    aspect-ratio: 4 / 3;
-    padding: 1.25rem;
-  }
-
-  .poker-table::after {
-    inset: 1rem;
-  }
-
-  .seat.side-top {
-    transform: translate(-50%, -80%);
-  }
-
-  .seat.side-bottom {
-    transform: translate(-50%, -20%);
-  }
-
-  .seat.side-right {
-    transform: translate(-20%, -50%);
-  }
-
-  .seat.side-left {
-    transform: translate(-80%, -50%);
   }
 
   .card-row {
